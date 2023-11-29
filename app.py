@@ -1,14 +1,6 @@
 import streamlit as st
 import pandas as pd
 
-import subprocess
-
-# List of packages to install
-packages = ["streamlit", "mysql-connector-python"]
-
-# Install each package using pip
-for package in packages:
-    subprocess.check_call(["pip", "install", package])
 
 import mysql.connector
 

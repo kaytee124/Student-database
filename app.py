@@ -6,7 +6,7 @@ import mysql.connector
 
 # Establish connection
 conn = mysql.connector.connect(
-    host="tcp://0.tcp.eu.ngrok.io",
+    host="0.tcp.eu.ngrok.io",
     port="16728",  # Use the ngrok forwarded port
     user="root",
     password="MARIAcurie@1965",

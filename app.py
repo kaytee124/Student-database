@@ -7,10 +7,10 @@ import mysql.connector
 # Establish connection
 conn = mysql.connector.connect(
     host="5.tcp.eu.ngrok.io",
-    port = "18360",
+    port="12649",
     user="root",
     password="MARIAcurie@1965",
-    database="pbj_Database"
+    database="PBJ_Database"
 )
 
 cursor = conn.cursor()

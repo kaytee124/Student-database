@@ -6,11 +6,10 @@ import mysql.connector
 
 # Establish connection
 conn = mysql.connector.connect(
-    host="0.tcp.eu.ngrok.io",
-    port="16728",  # Use the ngrok forwarded port
+    host="127.0.0.1",
     user="root",
     password="MARIAcurie@1965",
-    database="PBJ_Database"
+    database="pbj_Database"
 )
 
 cursor = conn.cursor()
@@ -38,7 +37,7 @@ st.title('MySQL Database Interface')
 
 
 # Dropdown to select tables
-table_selected = st.selectbox('Select Table', ('Students', 'Courses', 'Course_Taken', 'Degree_Requirements','Majors'))
+table_selected = st.selectbox('Select Table', ('Students', 'Courses', 'Course_Taken', 'Degree_Requirements','Majors','Department','grad_Students','Undergrad_Students'))
 
 if table_selected:
     # Fetch primary keys for the selected table

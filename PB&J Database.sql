@@ -223,39 +223,49 @@ SELECT * FROM Students;
 CREATE VIEW Majors_View AS
 SELECT * FROM Majors;
 
-# Query 3: 
+#query 3: 
+CREATE VIEW grad_Students_View AS
+SELECT gs.studentID, gs.GMAT_Score, s.FirstName, s.LastName
+FROM grad_Students gs
+JOIN Students s ON gs.studentID = s.studentID;
+
+#query 4:
+CREATE VIEW undergrad_Students_View AS
+SELECT us.studentID, us.WASSCE_Score, s.FirstName, s.LastName
+FROM Undergrad_Students us
+JOIN Students s ON us.studentID = s.studentID;
+
+# Query 5: 
 -- Inner join to list students by major
 SELECT Students.FirstName, Students.LastName, Majors.MajorName
 FROM Students
 INNER JOIN Majors ON Students.majorID = Majors.majorID;
 
-# Query 4: 
+# Query 6: 
 -- Aggregate function to calculate overall GPA for a student
 -- Identify students with overallGPA > 3.50 as Dean's List
-SELECT CONCAT(s.FirstName, ' ', s.LastName) AS StudentName, s.OverallGPA, m.MajorName
+SELECT CONCAT(s.FirstName, ' ', s.LastName) AS StudentName, ROUND(s.OverallGPA, 2) AS RoundedOverallGPA, m.MajorName
 FROM (
     SELECT studentID, FirstName, LastName, majorID, AVG(GPA) AS OverallGPA
     FROM Students
     GROUP BY studentID, FirstName, LastName, majorID
 ) s
 JOIN Majors m ON s.majorID = m.majorID
-WHERE s.OverallGPA > 3.50;
+WHERE ROUND(s.OverallGPA, 2) > 3.50;
 
 
-
-
-# Query 5: 
+# Query 7: 
 -- Creating a view for Degree_Requirements
 CREATE VIEW Degree_Requirements_View AS
 SELECT * FROM Degree_Requirements;
 
--- # Query 7: 
+-- # Query 8: 
 -- Retrieve personal details, major, year group, and courses taken for a specific student (e.g., studentID = 1)
 SELECT s.studentID, s.FirstName, s.LastName, s.DateOfBirth, s.Gender, s.Email, s.PhoneNumber, s.CountryOfOrigin, s.YearGroup, s.isUnderGrad, s.GPA, m.MajorName
 FROM Students s
 INNER JOIN Majors m ON m.majorID = s.majorID;
 
--- Query 8:
+-- Query 9:
 -- Retrieve a list of courses per major
 SELECT Majors_View.MajorName, Courses.CourseName
 FROM Majors_View
@@ -264,7 +274,7 @@ INNER JOIN Courses ON Degree_Requirements.courseID = Courses.courseID
 ORDER BY Majors_View.MajorName, Courses.CourseName
 LIMIT 0, 1000;
 
--- Query 9:
+-- Query 10:
 -- Display detailed breakdown of major requirements for a specific major (e.g., MajorName = 'Computer Science')
 SELECT Majors_View.MajorName, Courses.CourseName
 FROM Majors_View
@@ -272,18 +282,18 @@ INNER JOIN Degree_Requirements_View ON Majors_View.majorID = Degree_Requirements
 INNER JOIN Courses ON Degree_Requirements_View.courseID = Courses.courseID
 WHERE Majors_View.MajorName = 'Computer Science';
 
--- Query 10:
+-- Query 11:
 -- Condition to identify undergraduate and graduate students
 SELECT Students.FirstName, Students.LastName, Students.isUnderGrad
 FROM Students
 WHERE Students.isUnderGrad = 'yes';
 
--- Query 11:
+-- Query 12:
 -- Inner join to list departments and heads
 SELECT Department.departmentName, Department.departmentHead
 FROM Department;
 
--- Query 12:
+-- Query 13:
 -- Inner join to identify courses offered by a department
 SELECT Courses.CourseName, Courses.SemesterOffered
 FROM Courses
@@ -291,32 +301,47 @@ INNER JOIN Department ON Courses.departmentID = Department.departmentID
 WHERE Department.departmentName = 'Computer Science & Management Information System';
 
 
--- Query 13:
--- Identify students with overallGPA > 3.50 as Dean's List
-SELECT CONCAT(s.FirstName, ' ', s.LastName) AS StudentName, AVG(s.GPA) AS OverallGPA, m.MajorName
-FROM Students s
-JOIN Majors m ON s.majorID = m.majorID
-GROUP BY s.studentID, s.FirstName, s.LastName, m.MajorName
-HAVING OverallGPA > 3.50;
-
-
 -- Query 14:
--- Identify students with CGPA < 2.0 as Probation List
-SELECT CONCAT(s.FirstName, ' ', s.LastName) AS StudentName, AVG(s.GPA) AS OverallGPA, m.MajorName
-FROM Students s
-JOIN Majors m ON s.majorID = m.majorID
-GROUP BY s.studentID, s.FirstName, s.LastName, m.MajorName
-HAVING OverallGPA < 2.0;
+-- Identify students with overallGPA > 3.50 as Dean's List
+SELECT
+    CONCAT(s.FirstName, ' ', s.LastName) AS StudentName,
+    ROUND(AVG(s.GPA), 2) AS RoundedOverallGPA,
+    m.MajorName
+FROM
+    Students s
+JOIN
+    Majors m ON s.majorID = m.majorID
+GROUP BY
+    s.studentID, s.FirstName, s.LastName, m.MajorName
+HAVING
+    RoundedOverallGPA > 3.50;
 
 
 -- Query 15:
+-- Identify students with CGPA < 2.0 as Probation List
+SELECT
+    CONCAT(s.FirstName, ' ', s.LastName) AS StudentName,
+    ROUND(AVG(s.GPA), 2) AS RoundedOverallGPA,
+    m.MajorName
+FROM
+    Students s
+JOIN
+    Majors m ON s.majorID = m.majorID
+GROUP BY
+    s.studentID, s.FirstName, s.LastName, m.MajorName
+HAVING
+    RoundedOverallGPA < 2.0;
+
+
+
+-- Query 16:
 -- Count the number of courses a student is currently enrolled in (e.g., studentID = 1)
 SELECT CONCAT(Students_View.FirstName, ' ', Students_View.LastName) AS StudentName, COUNT(Course_Taken.courseID) AS NumberOfCourses
 FROM Students_View
 LEFT JOIN Course_Taken ON Students_View.studentID = Course_Taken.studentID
 WHERE Students_View.studentID = 1;
 
--- Query 16:
+-- Query 17:
 -- Query to monitor courses completed and those required for graduation for a specific student (e.g., studentID = 1)
 SELECT
     s.studentID,
@@ -336,12 +361,12 @@ LEFT JOIN
 WHERE
     s.studentID = 1;
     
--- Query 8:
+-- Query 18:
 -- Query to identify students with CGPA < 2.0 as potential course failures
 -- Identify students with CGPA < 2.0 as Probation List
 SELECT
     CONCAT(s.FirstName, ' ', s.LastName) AS StudentName,
-    AVG(s.GPA) AS OverallGPA,
+    ROUND(AVG(s.GPA), 2) AS RoundedOverallGPA,
     m.MajorName,
     ct.courseID,
     c.CourseName,
@@ -358,10 +383,10 @@ JOIN
 GROUP BY
     s.studentID, s.FirstName, s.LastName, m.MajorName, ct.courseID, c.CourseName, c.NumberOfCredits, c.SemesterOffered
 HAVING
-    OverallGPA < 2.0;
+    RoundedOverallGPA < 2.0;
 
 
--- Query 17:
+-- Query 19:
 -- Query to monitor courses completed and those required for graduation for a specific student using LIKE
 SELECT
     s.studentID,
@@ -382,7 +407,7 @@ WHERE
     s.studentID = 1
     AND c.CourseName LIKE '%';  -- Using LIKE with wildcard to match all courses
 
--- Query 18:
+-- Query 19:
 -- Query to identify students with CGPA < 2.0 as potential course failures using IN
 -- Identify students with CGPA < 2.0 and majorID in (1, 2, 3) as Probation List
 SELECT
@@ -409,7 +434,7 @@ HAVING
     OverallGPA < 2.0;
  
     
--- Query 19:
+-- Query 20:
 -- Query to display a detailed breakdown of major requirements for a specific major using NOT NULL
 SELECT
     m.MajorName,
@@ -426,7 +451,7 @@ WHERE
     m.MajorName = 'Computer Science'
     AND c.NumberOfCredits IS NOT NULL;  -- Using NOT NULL to filter courses with defined credits
     
--- Query 20:
+-- Query 21:
 -- Query to track progress toward meeting degree requirements for a specific student using CTE
 WITH StudentProgress AS (
     SELECT
@@ -450,6 +475,7 @@ WITH StudentProgress AS (
     WHERE
         s.studentID = 1
 )
+
 SELECT *
 FROM StudentProgress
 ORDER BY StudentProgress.studentID, StudentProgress.SemesterOffered;
@@ -481,13 +507,4 @@ WHERE
 GROUP BY
     s.studentID, ct.courseID, c.CourseName, d.departmentName
 ORDER BY
-    c.SemesterOffered DESC, c.CourseName ASC;  -- Sorting by semester and course name
-
-
-
-
-
-
-
-
-
+    c.SemesterOffered DESC, c.CourseName ASC;  -- Sorting by semester and course name
